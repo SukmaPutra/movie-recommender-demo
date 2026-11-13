@@ -26,13 +26,6 @@ EVIDENCE_ORDER = [
     "Recent Preference",
     "Fallback generik",
 ]
-EVIDENCE_COLOR = {
-    "Genre Preference": "#A78BFA",
-    "Genre Frequency": "#60A5FA",
-    "Item Quality": "#FBBF24",
-    "Recent Preference": "#34D399",
-    "Fallback generik": "#94A3B8",
-}
 EXPECTED_ROWS = 59810
 EXPECTED_USERS = 5981
 
@@ -44,45 +37,241 @@ FIDELITY_ROWS = [
     {"Komponen": "Popularitas film", "Mentah": -0.004, "Centered": -0.041, "n": 59810},
     {"Komponen": "Latent Similarity", "Mentah": 0.005, "Centered": -0.061, "n": 59810},
 ]
+RANKING_ROWS = [
+    {"Metrik": "Precision@10", "Model": 0.0357, "Acak": 0.0053},
+    {"Metrik": "Recall@10", "Model": 0.0228, "Acak": 0.0028},
+    {"Metrik": "NDCG@10", "Model": 0.0393, "Acak": None},
+    {"Metrik": "HR@10", "Model": 0.2312, "Acak": 0.0505},
+]
+
+# ---------------------------------------------------------------------------
+# Token desain (tema terang). Tiga lapis:
+#   PRIMITIVE : nilai mentah. Satu-satunya tempat hex.
+#   SEMANTIC  : peran warna yang dipakai komponen.
+#   Komponen  : kelas .re-* di CSS_COMPONENTS, hanya membaca variabel semantic.
+# Font stack memakai font desain bila tersedia, lalu jatuh ke font sistem.
+# ---------------------------------------------------------------------------
+PRIMITIVE = {
+    "paper": "#FAF8F4",
+    "white": "#FFFFFF",
+    "sand": "#F3EFE8",
+    "sand-line": "#D9D3C7",
+    "stone-line": "#8F887A",
+    "ink-900": "#1D1B18",
+    "ink-700": "#504B44",
+    "ink-500": "#6B655B",
+    "terracotta-600": "#A8452A",
+    "terracotta-100": "#F4E4DD",
+}
+SEMANTIC = {
+    "bg": "paper",
+    "bg-raised": "white",
+    "bg-sunken": "sand",
+    "text": "ink-900",
+    "text-2": "ink-700",
+    "text-muted": "ink-500",
+    "line": "sand-line",
+    "line-strong": "stone-line",
+    "accent": "terracotta-600",
+    "accent-soft": "terracotta-100",
+}
+FONT_SERIF = '"Source Serif 4", Georgia, "Times New Roman", serif'
+FONT_SANS = '"IBM Plex Sans", "Segoe UI", system-ui, sans-serif'
+FONT_MONO = '"IBM Plex Mono", ui-monospace, Consolas, monospace'
+TYPE_SCALE = {
+    "caption": "0.8125rem",
+    "small": "0.875rem",
+    "body": "1rem",
+    "lead": "1.125rem",
+    "h4": "1.125rem",
+    "h3": "1.5rem",
+    "title": "2.5rem",
+    "figure": "2.5rem",
+}
+SPACE = {"1": "0.25rem", "2": "0.5rem", "3": "0.75rem", "4": "1rem", "6": "1.5rem", "8": "2rem", "12": "3rem"}
+EVIDENCE_SHAPE = {
+    "Genre Preference": "pref",
+    "Genre Frequency": "freq",
+    "Item Quality": "qual",
+    "Recent Preference": "recent",
+    "Fallback generik": "fallback",
+}
+CSS_COMPONENTS = """
+.stApp { background: var(--bg); color: var(--text); font-family: var(--font-sans); }
+.stApp [data-testid="stMarkdownContainer"] p,
+.stApp [data-testid="stMarkdownContainer"] li { line-height: 1.65; }
+.stApp h1, .stApp h2, .stApp h3, .stApp h4 {
+  font-family: var(--font-serif); font-weight: 500; color: var(--text); letter-spacing: -0.005em;
+}
+.stApp h3 { font-size: var(--fs-h3) !important; }
+.stApp h4 { font-size: var(--fs-h4) !important; margin-top: var(--sp-6); }
+.stApp [data-testid="stCaptionContainer"],
+.stApp [data-testid="stCaptionContainer"] * { color: var(--text-muted) !important; opacity: 1 !important; }
+.block-container { max-width: 1080px; padding-top: var(--sp-8); padding-bottom: var(--sp-12); }
+[data-testid="stSidebar"] { background: var(--bg-sunken); border-right: 1px solid var(--line); }
+[data-testid="stSidebar"][aria-expanded="true"] { width: 16rem !important; }
+
+.stApp button, .stApp input, .stApp textarea { font-family: var(--font-sans); }
+.stApp input, .stApp textarea, .stApp [data-baseweb="select"] > div {
+  border-color: var(--line-strong) !important; background: var(--bg-raised) !important;
+}
+.stApp [data-testid="stBaseButton-secondary"] {
+  background: transparent; border: 1px solid var(--line-strong); color: var(--text);
+}
+.stApp [data-testid="stBaseButton-secondary"]:hover { border-color: var(--accent); color: var(--accent); }
+.stApp [data-baseweb="tag"],
+.stApp [data-testid="stMultiSelectTagsContainer"] > span > span { background: var(--accent-soft) !important; }
+.stApp [data-baseweb="tag"], .stApp [data-baseweb="tag"] span,
+.stApp [data-testid="stMultiSelectTagsContainer"] > span > span,
+.stApp [data-testid="stMultiSelectTagsContainer"] > span > span * { color: var(--accent) !important; }
+.stApp a { color: var(--accent); }
+.stApp :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.re-serif { font-family: var(--font-serif); }
+.re-num { font-family: var(--font-sans); font-weight: 500; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -0.01em; }
+.re-muted { color: var(--text-muted); }
+
+.re-mark {
+  display: inline-block; width: 0.62em; height: 0.62em; margin-right: 0.5em;
+  background: var(--accent); vertical-align: 0.02em; flex: none;
+}
+.re-mark--pref { border-radius: 50%; }
+.re-mark--freq { transform: rotate(45deg) scale(0.82); }
+.re-mark--qual { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.re-mark--fallback { background: none; border: 1.5px solid var(--text-muted); border-radius: 50%; box-sizing: border-box; }
+
+.re-kicker { font-size: var(--fs-small); color: var(--text-muted); margin: 0 0 var(--sp-2); }
+.re-title { font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-title); line-height: 1.1; margin: 0 0 var(--sp-3); }
+.re-lead { font-size: var(--fs-lead); color: var(--text-2); max-width: 42rem; line-height: 1.65; margin: 0; }
+.re-finding {
+  display: flex; align-items: baseline; gap: var(--sp-4); flex-wrap: wrap;
+  border-top: 1px solid var(--line-strong); padding-top: var(--sp-4); margin: var(--sp-6) 0 var(--sp-4);
+}
+.re-big { font-size: var(--fs-figure); line-height: 1; color: var(--text); }
+.re-finding-text { color: var(--text-2); max-width: 32rem; }
+.re-figs { display: flex; flex-wrap: wrap; row-gap: var(--sp-4); margin: var(--sp-4) 0 var(--sp-6); }
+.re-fig { padding: 0 var(--sp-8) 0 var(--sp-6); border-left: 1px solid var(--line-strong); }
+.re-fig:first-child { padding-left: 0; border-left: 0; }
+.re-val { font-size: 1.75rem; line-height: 1.2; color: var(--text); }
+.re-lab { font-size: var(--fs-caption); color: var(--text-muted); }
+
+.re-profile { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; color: var(--text-2); margin: var(--sp-4) 0 var(--sp-2); }
+.re-strip { display: inline-flex; gap: 3px; }
+.re-cell {
+  width: 1.5rem; height: 1.5rem; border: 1px solid var(--line-strong); border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center; background: var(--bg-raised);
+}
+.re-cell .re-mark { margin: 0; }
+
+.re-list { border-top: 1px solid var(--line-strong); margin-top: var(--sp-2); }
+.re-item {
+  display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 11rem; gap: var(--sp-4);
+  padding: var(--sp-4) 0; border-bottom: 1px solid var(--line);
+}
+.re-rank { font-size: 1.9rem; line-height: 1; color: var(--text); }
+.re-movie { font-family: var(--font-serif); font-size: var(--fs-lead); line-height: 1.3; color: var(--text); }
+.re-genre { font-size: var(--fs-caption); color: var(--text-muted); margin: 2px 0 var(--sp-2); }
+.re-why { color: var(--text); line-height: 1.65; margin: 0; }
+.re-u-main, .re-u-latent {
+  text-decoration-line: underline; text-decoration-thickness: 1.5px;
+  text-decoration-color: var(--accent); text-underline-offset: 3px;
+}
+.re-u-latent { text-decoration-style: dashed; }
+.re-meta {
+  display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-1);
+  text-align: right; font-size: var(--fs-caption); color: var(--text-2);
+}
+.re-score { color: var(--text-muted); }
+.re-legend { font-size: var(--fs-caption); color: var(--text-muted); margin-top: var(--sp-2); }
+
+.re-flow { display: flex; flex-wrap: wrap; gap: var(--sp-1) 0.375rem; align-items: center; margin: var(--sp-4) 0 var(--sp-6); }
+.re-flow span {
+  border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.35rem 0.55rem;
+  font-size: var(--fs-caption); background: var(--bg-raised); white-space: nowrap;
+}
+.re-flow i { color: var(--text-muted); font-style: normal; }
+.re-ladder { border-top: 1px solid var(--line-strong); margin-bottom: var(--sp-4); }
+.re-step {
+  display: grid; grid-template-columns: 2rem 12.5rem minmax(0, 1fr); gap: var(--sp-3);
+  padding: var(--sp-3) 0; border-bottom: 1px solid var(--line); align-items: baseline;
+}
+.re-n { font-family: var(--font-serif); font-size: var(--fs-h4); color: var(--text); }
+.re-example { border-top: 1px solid var(--line-strong); padding-top: var(--sp-4); margin-top: var(--sp-2); line-height: 1.7; }
+
+.re-bars {
+  display: grid; grid-template-columns: minmax(9.5rem, max-content) minmax(0, 1fr) auto;
+  gap: var(--sp-3) var(--sp-3); align-items: center; font-size: var(--fs-small); margin-bottom: var(--sp-4);
+}
+.re-bar { display: block; height: 0.625rem; background: var(--bg-sunken); border-radius: 2px; position: relative; }
+.re-fill { display: block; position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 2px; }
+.re-bar--muted .re-fill { background: var(--text-muted); }
+.re-pair { display: grid; gap: 4px; }
+.re-vals { text-align: right; color: var(--text-2); white-space: nowrap; }
+.re-keys { display: flex; gap: var(--sp-4); font-size: var(--fs-caption); color: var(--text-2); margin: var(--sp-2) 0; }
+.re-sw { display: inline-block; width: 0.7rem; height: 0.7rem; margin-right: 0.4rem; vertical-align: -0.05rem; border-radius: 2px; background: var(--accent); }
+.re-sw--muted { background: var(--text-muted); }
+.re-sw--raw { background: none; border: 2px solid var(--accent); border-radius: 50%; box-sizing: border-box; }
+.re-sw--cen { border-radius: 50%; }
+
+.re-dots {
+  display: grid; grid-template-columns: minmax(9.5rem, max-content) minmax(0, 1fr) auto;
+  gap: 0 var(--sp-3); align-items: center; font-size: var(--fs-small); margin-bottom: var(--sp-4);
+}
+.re-dots > * { padding: var(--sp-2) 0; border-top: 1px solid var(--line); }
+.re-track { position: relative; height: 1.25rem; }
+.re-track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--line-strong); }
+.re-zero { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--text-2); }
+.re-dot { position: absolute; top: 50%; border-radius: 50%; box-sizing: border-box; }
+.re-dot--raw { width: 1rem; height: 1rem; margin: -0.5rem 0 0 -0.5rem; border: 2px solid var(--accent); }
+.re-dot--cen { width: 0.6rem; height: 0.6rem; margin: -0.3rem 0 0 -0.3rem; background: var(--accent); }
+.re-axis { position: relative; height: 1.1rem; font-size: var(--fs-caption); color: var(--text-muted); }
+.re-axis span { position: absolute; top: 0; transform: translateX(-50%); }
+
+@media (max-width: 760px) {
+  .re-item { grid-template-columns: 2.25rem minmax(0, 1fr); }
+  .re-meta { grid-column: 2; align-items: flex-start; text-align: left; }
+  .re-step { grid-template-columns: 1.5rem minmax(0, 1fr); }
+  .re-step > :nth-child(3) { grid-column: 2; }
+  .re-bars, .re-dots { grid-template-columns: minmax(0, 1fr) auto; }
+  .re-bars > :nth-child(3n + 1), .re-dots > :nth-child(3n + 1) { grid-column: 1; }
+  .re-bars > :nth-child(3n + 2), .re-dots > :nth-child(3n + 2) { grid-column: 1 / -1; }
+  .re-bars > :nth-child(3n + 3), .re-dots > :nth-child(3n + 3) { grid-column: 2; }
+  .re-fig { padding: 0 var(--sp-4); }
+}
+"""
+
+
+def _root_vars() -> str:
+    lines = [f"--p-{name}: {value};" for name, value in PRIMITIVE.items()]
+    lines += [f"--{role}: var(--p-{prim});" for role, prim in SEMANTIC.items()]
+    lines += [f"--font-serif: {FONT_SERIF};", f"--font-sans: {FONT_SANS};", f"--font-mono: {FONT_MONO};"]
+    lines += [f"--fs-{name}: {value};" for name, value in TYPE_SCALE.items()]
+    lines += [f"--sp-{name}: {value};" for name, value in SPACE.items()]
+    return "\n  ".join(lines)
 
 
 def inject_css() -> None:
-    st.markdown(
-        """
-        <style>
-        .block-container { padding-top: 1.4rem; max-width: 1180px; }
-        .hero {
-            background: radial-gradient(1200px 420px at 10% -10%, rgba(167,139,250,.35), transparent 55%),
-                        radial-gradient(900px 380px at 100% 0%, rgba(96,165,250,.22), transparent 50%),
-                        linear-gradient(180deg, #171722 0%, #101018 100%);
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 22px;
-            padding: 2rem 2.1rem 1.6rem;
-            margin-bottom: 1.2rem;
-        }
-        .kicker { letter-spacing: .16em; text-transform: uppercase; color: #C4B5FD; font-size: .78rem; margin: 0; }
-        .hero h1 { margin: .35rem 0 .6rem; font-size: 2.5rem; line-height: 1.1; }
-        .hero p { color: #D4D4D8; font-size: 1.05rem; max-width: 760px; }
-        .poster {
-            height: 92px; border-radius: 14px; display: flex; align-items: flex-end;
-            padding: .7rem .8rem; font-weight: 700; letter-spacing: .04em; color: white;
-            margin-bottom: .7rem;
-        }
-        .badge {
-            display: inline-block; border-radius: 999px; padding: .18rem .65rem;
-            font-size: .78rem; font-weight: 650; color: #0B0B10; margin: .15rem 0 .35rem;
-        }
-        .flow { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .6rem 0 1rem; }
-        .flow span {
-            background: #1C1C28; border: 1px solid rgba(255,255,255,.08);
-            border-radius: 12px; padding: .55rem .75rem; font-size: .92rem;
-        }
-        .flow i { color: #A78BFA; font-style: normal; }
-        .rule { border-left: 3px solid #A78BFA; padding: .2rem 0 .2rem .9rem; margin-bottom: .85rem; }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    css = f":root {{\n  {_root_vars()}\n}}\n{CSS_COMPONENTS}"
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------------------
+# Pemformatan angka gaya Indonesia
+# ---------------------------------------------------------------------------
+def fmt_int(value: int | float) -> str:
+    return f"{int(value):,}".replace(",", ".")
+
+
+def fmt_dec(value: float, digits: int) -> str:
+    return f"{value:.{digits}f}".replace(".", ",")
+
+
+def fmt_signed(value: float, digits: int = 3) -> str:
+    return f"{value:+.{digits}f}".replace("-", "−").replace(".", ",")
+
+
+def fmt_pct(value: float) -> str:
+    return f"{value * 100:.2f}%".replace(".", ",")
 
 
 @st.cache_data
@@ -115,21 +304,6 @@ def example_user_id(frame: pd.DataFrame) -> int:
     return int(variety[variety == variety.max()].index.min())
 
 
-def poster_html(title: str) -> str:
-    hue = sum(ord(char) for char in title) % 360
-    initials = "".join(part[0] for part in title.replace(",", " ").split()[:2]).upper()
-    safe_initials = html.escape(initials or "FL")
-    return (
-        f'<div class="poster" style="background: linear-gradient(135deg, hsl({hue},62%,42%), hsl({(hue + 40) % 360},55%,22%));">'
-        f"{safe_initials}</div>"
-    )
-
-
-def badge_html(evidence: str) -> str:
-    color = EVIDENCE_COLOR.get(evidence, "#E4E4E7")
-    return f'<span class="badge" style="background:{color}">{html.escape(evidence)}</span>'
-
-
 def format_genre(value: object) -> str:
     if pd.isna(value) or str(value).strip() == "":
         return "Genre tidak tersedia"
@@ -142,50 +316,171 @@ def format_score(value: object) -> str | None:
     return f"{float(value):.2f}"
 
 
-_dialog_decorator = getattr(st, "dialog", getattr(st, "experimental_dialog", None))
+# ---------------------------------------------------------------------------
+# Komponen tampilan (HTML tanpa indentasi agar tidak dibaca sebagai blok kode)
+# ---------------------------------------------------------------------------
+def evidence_label(evidence: str) -> str:
+    shape = EVIDENCE_SHAPE.get(evidence, "fallback")
+    return f'<span class="re-mark re-mark--{shape}" aria-hidden="true"></span>{html.escape(evidence)}'
 
 
-def render_movie_detail(row: pd.Series | dict) -> None:
-    st.markdown(poster_html(row["Judul"]), unsafe_allow_html=True)
-    st.markdown(f"### #{int(row['Peringkat'])} · {row['Judul']}")
-    st.markdown(badge_html(row["Evidence"]), unsafe_allow_html=True)
-    st.write(f"**Genre:** {format_genre(row['Genre'])}")
-    score = format_score(row["SkorPrediksi"])
-    if score:
-        st.write(f"**Skor prediksi model (`est_clipped`):** {score}")
-    st.divider()
-    st.markdown("##### Mengapa film ini direkomendasikan?")
-    st.info(row["Penjelasan"])
-    st.caption("Penjelasan disusun secara post-hoc berbasis aturan dari hasil eksperimen.")
+def _sentence_end(text: str, start: int) -> int:
+    """Indeks titik akhir kalimat, mengabaikan titik di dalam tanda kutip."""
+    in_quote = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if char == '"':
+            in_quote = not in_quote
+        elif char == "." and not in_quote and (index + 1 == len(text) or text[index + 1] == " "):
+            return index
+    return len(text)
 
 
-if _dialog_decorator:
-    @_dialog_decorator("Detail Rekomendasi")
-    def open_movie_dialog(row_dict: dict) -> None:
-        render_movie_detail(row_dict)
-else:
-    open_movie_dialog = None
+def explanation_html(text: object) -> str:
+    """Escape kalimat penjelasan dan garis bawahi evidence utama serta klausa latent.
+
+    Teks tidak diubah. Bila format kalimat tidak dikenali, teks tampil polos."""
+    raw = str(text)
+    prefix = "Direkomendasikan karena "
+    latent_at = raw.find("mirip dengan")
+    spans: list[tuple[int, int, str]] = []
+    if raw.startswith(prefix):
+        main_end = _sentence_end(raw, len(prefix))
+        if 0 <= latent_at < main_end:
+            main_end = latent_at
+        while main_end > len(prefix) and raw[main_end - 1] in " ,":
+            main_end -= 1
+        spans.append((len(prefix), main_end, "re-u-main"))
+    if latent_at != -1:
+        spans.append((latent_at, _sentence_end(raw, latent_at), "re-u-latent"))
+    spans.sort()
+    if any(spans[i][1] > spans[i + 1][0] for i in range(len(spans) - 1)):
+        return html.escape(raw)
+    parts, cursor = [], 0
+    for start, end, css_class in spans:
+        parts.append(html.escape(raw[cursor:start]))
+        parts.append(f'<span class="{css_class}">{html.escape(raw[start:end])}</span>')
+        cursor = end
+    parts.append(html.escape(raw[cursor:]))
+    return "".join(parts)
+
+
+def figures_html(items: list[tuple[str, str]]) -> str:
+    cells = "".join(
+        f'<div class="re-fig"><div class="re-num re-val">{html.escape(value)}</div>'
+        f'<div class="re-lab">{html.escape(label)}</div></div>'
+        for label, value in items
+    )
+    return f'<div class="re-figs">{cells}</div>'
+
+
+def evidence_counts(frame: pd.DataFrame) -> pd.Series:
+    return frame["Evidence"].value_counts().reindex(EVIDENCE_ORDER).fillna(0).astype(int)
+
+
+def evidence_bars_html(counts: pd.Series) -> str:
+    total = int(counts.sum()) or 1
+    top = int(counts.max()) or 1
+    rows = []
+    for name, count in counts.items():
+        width = count / top * 100
+        muted = " re-bar--muted" if name == "Fallback generik" else ""
+        rows.append(
+            f"<span>{evidence_label(name)}</span>"
+            f'<span class="re-bar{muted}"><span class="re-fill" style="width:{width:.1f}%"></span></span>'
+            f'<span class="re-vals re-num">{fmt_int(count)} · {fmt_dec(count / total * 100, 2)}%</span>'
+        )
+    return f'<div class="re-bars">{"".join(rows)}</div>'
+
+
+def ranking_bars_html() -> str:
+    rows = []
+    for item in RANKING_ROWS:
+        model, random = item["Model"], item["Acak"]
+        scale = max(model, random or 0) or 1
+        model_bar = f'<span class="re-bar"><span class="re-fill" style="width:{model / scale * 100:.1f}%"></span></span>'
+        if random is None:
+            random_bar = ""
+            values = f"{fmt_dec(model, 4)}<br>—"
+        else:
+            random_bar = (
+                f'<span class="re-bar re-bar--muted"><span class="re-fill" style="width:{random / scale * 100:.1f}%">'
+                "</span></span>"
+            )
+            values = f"{fmt_dec(model, 4)}<br>{fmt_dec(random, 4)}"
+        rows.append(
+            f"<span>{html.escape(item['Metrik'])}</span>"
+            f'<span class="re-pair">{model_bar}{random_bar}</span>'
+            f'<span class="re-vals re-num">{values}</span>'
+        )
+    keys = (
+        '<div class="re-keys"><span><span class="re-sw"></span>Model</span>'
+        '<span><span class="re-sw re-sw--muted"></span>Acak</span></div>'
+    )
+    return f'{keys}<div class="re-bars">{"".join(rows)}</div>'
+
+
+def fidelity_dots_html() -> str:
+    values = [row[key] for row in FIDELITY_ROWS for key in ("Mentah", "Centered")]
+    step = 0.05
+    low = -(int((-(min(values) - 0.02)) / step) + 1) * step if min(values) - 0.02 < 0 else 0.0
+    high = (int((max(values) + 0.02) / step) + 1) * step
+    span = high - low
+
+    def pos(value: float) -> float:
+        return (value - low) / span * 100
+
+    rows = []
+    for row in FIDELITY_ROWS:
+        raw, centered = row["Mentah"], row["Centered"]
+        rows.append(
+            f'<span>{html.escape(row["Komponen"])}</span>'
+            f'<span class="re-track"><span class="re-zero" style="left:{pos(0):.1f}%"></span>'
+            f'<span class="re-dot re-dot--cen" style="left:{pos(centered):.1f}%"></span>'
+            f'<span class="re-dot re-dot--raw" style="left:{pos(raw):.1f}%"></span></span>'
+            f'<span class="re-vals re-num">{fmt_signed(raw)} · {fmt_signed(centered)}'
+            f'<br><span class="re-muted">n {fmt_int(row["n"])}</span></span>'
+        )
+    axis = (
+        "<span></span>"
+        f'<span class="re-axis"><span style="left:0;transform:none">{fmt_signed(low, 2)}</span>'
+        f'<span style="left:{pos(0):.1f}%">0</span>'
+        f'<span style="left:100%;transform:translateX(-100%)">{fmt_signed(high, 2)}</span></span>'
+        "<span></span>"
+    )
+    keys = (
+        '<div class="re-keys"><span><span class="re-sw re-sw--raw"></span>Mentah</span>'
+        '<span><span class="re-sw re-sw--cen"></span>Centered</span></div>'
+    )
+    return f'{keys}<div class="re-dots">{"".join(rows)}{axis}</div>'
 
 
 def page_home(frame: pd.DataFrame) -> None:
+    hr = next(row for row in RANKING_ROWS if row["Metrik"] == "HR@10")
     st.markdown(
-        """
-        <section class="hero">
-          <p class="kicker">Demo skripsi · MovieLens 1M</p>
-          <h1>ReelExplain</h1>
-          <p>Sistem rekomendasi film collaborative filtering berbasis FunkSVD,
-          dilengkapi penjelasan post-hoc berbasis aturan. Peringkat film berasal dari model.
-          Penjelasan disusun setelah rekomendasi terbentuk dan tidak mengubah urutan tersebut.</p>
-        </section>
-        """,
+        '<div class="re-kicker">Demo skripsi · MovieLens 1M</div>'
+        '<h1 class="re-title">ReelExplain</h1>'
+        '<p class="re-lead">Sistem rekomendasi film collaborative filtering berbasis FunkSVD, '
+        "dilengkapi penjelasan post-hoc berbasis aturan. Peringkat film berasal dari model. "
+        "Penjelasan disusun setelah rekomendasi terbentuk dan tidak mengubah urutan tersebut.</p>"
+        '<div class="re-finding">'
+        f'<span class="re-num re-big">{fmt_pct(hr["Model"])}</span>'
+        '<span class="re-finding-text">HR@10: pengguna yang mendapat sekurang-kurangnya satu film relevan. '
+        f'Pemeringkatan acak: {fmt_pct(hr["Acak"])}.</span></div>',
         unsafe_allow_html=True,
     )
     coverage = (frame["Evidence"] != "Fallback generik").mean() * 100
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Pengguna", f"{frame['UserID'].nunique():,}".replace(",", "."))
-    c2.metric("Rekomendasi", f"{len(frame):,}".replace(",", "."))
-    c3.metric("Kategori evidence", str(frame["Evidence"].nunique()))
-    c4.metric("Evidence non-fallback", f"{coverage:.2f}%".replace(".", ","))
+    st.markdown(
+        figures_html(
+            [
+                ("Pengguna", fmt_int(frame["UserID"].nunique())),
+                ("Rekomendasi", fmt_int(len(frame))),
+                ("Kategori evidence", str(frame["Evidence"].nunique())),
+                ("Evidence non-fallback", f"{coverage:.2f}%".replace(".", ",")),
+            ]
+        ),
+        unsafe_allow_html=True,
+    )
 
     left, right = st.columns([1.15, 0.85])
     with left:
@@ -201,8 +496,7 @@ def page_home(frame: pd.DataFrame) -> None:
         )
     with right:
         st.subheader("Distribusi evidence")
-        counts = frame["Evidence"].value_counts().reindex(EVIDENCE_ORDER)
-        st.bar_chart(counts, color="#A78BFA", height=260)
+        st.markdown(evidence_bars_html(evidence_counts(frame)), unsafe_allow_html=True)
         st.caption("Dihitung dari 59.810 rekomendasi hasil eksperimen. Sama dengan Tabel 4.18.")
 
 
@@ -220,14 +514,9 @@ def page_recommendations(frame: pd.DataFrame, example_id: int) -> None:
         st.write("")
         if st.button("Contoh ragam evidence", use_container_width=True):
             st.session_state.user_id = example_id
-            st.session_state.detail_rank = None
             st.rerun()
     with pick:
         user_id = st.selectbox("UserID", user_ids, key="user_id")
-
-    if st.session_state.get("bound_user") != user_id:
-        st.session_state.detail_rank = None
-        st.session_state.bound_user = user_id
 
     user_df = frame[frame["UserID"] == user_id].sort_values("Peringkat")
     if user_df.empty:
@@ -235,12 +524,19 @@ def page_recommendations(frame: pd.DataFrame, example_id: int) -> None:
         return
 
     variety = user_df["Evidence"].value_counts().reindex(EVIDENCE_ORDER, fill_value=0)
-    st.markdown("#### Profil pengguna")
-    p1, p2, p3 = st.columns(3)
-    p1.metric("User ID", str(int(user_id)))
-    p2.metric("Jumlah rekomendasi", str(len(user_df)))
-    p3.metric("Jenis evidence pada Top-10", str(int((variety > 0).sum())))
-    st.bar_chart(variety, color="#60A5FA", height=180)
+    strip_cells = "".join(
+        f'<span class="re-cell" title="#{int(row.Peringkat)} {html.escape(row.Evidence)}">'
+        f'<span class="re-mark re-mark--{EVIDENCE_SHAPE[row.Evidence]}"></span></span>'
+        for row in user_df.itertuples()
+    )
+    strip_label = ", ".join(f"{int(row.Peringkat)} {row.Evidence}" for row in user_df.itertuples())
+    st.markdown(
+        '<div class="re-profile">'
+        f"<span>UserID {int(user_id)} · {len(user_df)} film · {int((variety > 0).sum())} jenis evidence</span>"
+        f'<span class="re-strip" role="img" aria-label="Evidence per peringkat: {html.escape(strip_label)}">'
+        f"{strip_cells}</span></div>",
+        unsafe_allow_html=True,
+    )
     st.caption("Tidak ada nama, usia, atau jenis kelamin. Profil hanya merangkum evidence pada Top-10 pengguna ini.")
 
     search_col, filter_col = st.columns([1.2, 1.4])
@@ -255,41 +551,34 @@ def page_recommendations(frame: pd.DataFrame, example_id: int) -> None:
 
     shown = user_df[user_df["Evidence"].isin(selected)]
     if query.strip():
-        shown = shown[shown["Judul"].str.contains(query.strip(), case=False, na=False)]
+        shown = shown[shown["Judul"].str.contains(query.strip(), case=False, na=False, regex=False)]
     st.markdown(f"#### Katalog · {len(shown)} dari {len(user_df)} film")
     if shown.empty:
         st.info("Tidak ada film yang cocok dengan pencarian atau filter pada pengguna ini.")
     else:
-        for start in range(0, len(shown), 2):
-            columns = st.columns(2)
-            for column, (_, row) in zip(columns, shown.iloc[start : start + 2].iterrows()):
-                with column:
-                    with st.container(border=True):
-                        st.markdown(poster_html(row["Judul"]), unsafe_allow_html=True)
-                        st.markdown(f"**#{int(row['Peringkat'])} · {row['Judul']}**")
-                        st.caption(format_genre(row["Genre"]))
-                        st.markdown(badge_html(row["Evidence"]), unsafe_allow_html=True)
-                        score = format_score(row["SkorPrediksi"])
-                        if score:
-                            st.caption(f"Skor prediksi model {score}")
-                        if st.button(
-                            "Lihat penjelasan",
-                            key=f"detail-{int(user_id)}-{int(row['Peringkat'])}",
-                            use_container_width=True,
-                        ):
-                            if open_movie_dialog is not None:
-                                open_movie_dialog(row.to_dict())
-                            else:
-                                st.session_state.detail_rank = int(row["Peringkat"])
-
-    if open_movie_dialog is None:
-        rank = st.session_state.get("detail_rank")
-        detail = user_df[user_df["Peringkat"] == rank]
-        if rank is not None and not detail.empty:
-            row = detail.iloc[0]
-            st.markdown("#### Detail rekomendasi")
-            with st.container(border=True):
-                render_movie_detail(row)
+        items = []
+        for _, row in shown.iterrows():
+            score = format_score(row["SkorPrediksi"])
+            score_html = (
+                f'<span class="re-score">Skor prediksi model <span class="re-num">{score.replace(".", ",")}</span></span>'
+                if score
+                else ""
+            )
+            items.append(
+                '<div class="re-item">'
+                f'<div class="re-rank re-serif">{int(row["Peringkat"])}</div>'
+                f'<div><div class="re-movie">{html.escape(str(row["Judul"]))}</div>'
+                f'<div class="re-genre">{html.escape(format_genre(row["Genre"]))}</div>'
+                f'<p class="re-why">{explanation_html(row["Penjelasan"])}</p></div>'
+                f'<div class="re-meta"><span>{evidence_label(row["Evidence"])}</span>{score_html}</div>'
+                "</div>"
+            )
+        st.markdown(f'<div class="re-list">{"".join(items)}</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="re-legend">Garis solid: evidence utama. Garis putus-putus: klausa kemiripan laten. '
+            "Penjelasan disusun secara post-hoc berbasis aturan dari hasil eksperimen.</div>",
+            unsafe_allow_html=True,
+        )
 
 
 def page_how() -> None:
@@ -302,15 +591,13 @@ def page_how() -> None:
         """
     )
     st.markdown(
-        """
-        <div class="flow">
-          <span>Riwayat pengguna</span><i>→</i>
-          <span>Ekstraksi evidence</span><i>→</i>
-          <span>Evaluasi threshold</span><i>→</i>
-          <span>Pemilihan aturan prioritas</span><i>→</i>
-          <span>Kalimat penjelasan</span>
-        </div>
-        """,
+        '<div class="re-flow">'
+        "<span>Riwayat pengguna</span><i>›</i>"
+        "<span>Ekstraksi evidence</span><i>›</i>"
+        "<span>Evaluasi threshold</span><i>›</i>"
+        "<span>Pemilihan aturan prioritas</span><i>›</i>"
+        "<span>Kalimat penjelasan</span>"
+        "</div>",
         unsafe_allow_html=True,
     )
 
@@ -337,11 +624,12 @@ def page_how() -> None:
         ),
     ]
     st.markdown("#### Lima kategori evidence")
-    for name, text in rules:
-        st.markdown(
-            f'<div class="rule">{badge_html(name)}<div>{html.escape(text)}</div></div>',
-            unsafe_allow_html=True,
-        )
+    steps = "".join(
+        f'<div class="re-step"><span class="re-n">{number}</span>'
+        f"<span>{evidence_label(name)}</span><span>{html.escape(text)}</span></div>"
+        for number, (name, text) in enumerate(rules, start=1)
+    )
+    st.markdown(f'<div class="re-ladder">{steps}</div>', unsafe_allow_html=True)
     st.markdown(
         """
         **Urutan prioritas:** Genre Preference > Genre Frequency > Item Quality > Recent Preference > Fallback generik.
@@ -352,9 +640,14 @@ def page_how() -> None:
         """
     )
     st.markdown("#### Contoh kalimat dari dataset")
-    st.info(
+    example = (
         'Direkomendasikan karena Anda sering menilai film bergenre Drama. '
         'Film ini juga mirip dengan "Schindler\'s List (1993)" yang pernah Anda sukai.'
+    )
+    st.markdown(
+        f'<div class="re-example">{explanation_html(example)}'
+        '<div class="re-legend">Garis solid: evidence utama. Garis putus-putus: klausa latent.</div></div>',
+        unsafe_allow_html=True,
     )
     st.caption("Contoh untuk pengguna 1, peringkat 1: Shawshank Redemption, The (1994), evidence Genre Frequency.")
 
@@ -364,21 +657,11 @@ def page_evaluation(frame: pd.DataFrame) -> None:
     st.caption("Angka berikut disalin dari output notebook eksperimen pada protokol Full Unseen.")
 
     st.markdown("#### Prediksi rating")
-    a, b = st.columns(2)
-    a.metric("RMSE uji", "0,8731")
-    b.metric("MAE uji", "0,6867")
+    st.markdown(figures_html([("RMSE uji", "0,8731"), ("MAE uji", "0,6867")]), unsafe_allow_html=True)
     st.caption("RMSE mengukur rata-rata simpangan kuadrat prediksi terhadap rating uji. MAE mengukur rata-rata selisih absolutnya. Keduanya pada skala rating 1–5.")
 
     st.markdown("#### Pemeringkatan Full Unseen")
-    ranking = pd.DataFrame(
-        [
-            {"Metrik": "Precision@10", "Model": 0.0357, "Acak": 0.0053},
-            {"Metrik": "Recall@10", "Model": 0.0228, "Acak": 0.0028},
-            {"Metrik": "NDCG@10", "Model": 0.0393, "Acak": None},
-            {"Metrik": "HR@10", "Model": 0.2312, "Acak": 0.0505},
-        ]
-    )
-    st.dataframe(ranking, hide_index=True, use_container_width=True)
+    st.markdown(ranking_bars_html(), unsafe_allow_html=True)
     st.caption(
         "Precision@10 adalah proporsi film relevan di dalam 10 rekomendasi. "
         "Recall@10 adalah proporsi film uji yang relevan dan berhasil masuk Top-10. "
@@ -387,21 +670,14 @@ def page_evaluation(frame: pd.DataFrame) -> None:
         "Kolom acak adalah ekspektasi pemeringkatan acak pada kandidat Full Unseen. "
         "Nilainya kecil karena kandidat per pengguna sangat banyak, rata-rata sekitar 3.535 film."
     )
+    st.caption("Panjang bar dinormalkan per metrik: bar terpanjang pada tiap baris adalah nilai terbesar metrik itu.")
 
     st.markdown("#### Explainability")
-    counts = frame["Evidence"].value_counts().reindex(EVIDENCE_ORDER)
-    distribution = pd.DataFrame(
-        {
-            "Evidence": counts.index,
-            "Jumlah": counts.values,
-            "Persen": (counts.values / len(frame) * 100).round(2),
-        }
+    st.markdown(
+        figures_html([("Coverage non-fallback", "94,58%"), ("Rekomendasi dengan klausa latent", "44,58%")]),
+        unsafe_allow_html=True,
     )
-    e1, e2 = st.columns(2)
-    e1.metric("Coverage non-fallback", "94,58%")
-    e2.metric("Rekomendasi dengan klausa latent", "44,58%")
-    st.bar_chart(counts, color="#34D399", height=240)
-    st.dataframe(distribution, hide_index=True, use_container_width=True)
+    st.markdown(evidence_bars_html(evidence_counts(frame)), unsafe_allow_html=True)
     st.caption("Coverage 94,58% berarti 5,42% rekomendasi memakai Fallback generik. Distribusi di atas dihitung dari CSV dan sesuai Tabel 4.18.")
 
     st.markdown("#### Fidelity")
@@ -409,8 +685,7 @@ def page_evaluation(frame: pd.DataFrame) -> None:
         "Fidelity pada penelitian ini adalah korelasi Spearman antara komponen evidence dan `score_raw` model, "
         "bukan satu angka lolos atau gagal. Centered berarti skor prediksi dikurangi rata-rata skor pengguna tersebut."
     )
-    fidelity = pd.DataFrame(FIDELITY_ROWS)
-    st.dataframe(fidelity, hide_index=True, use_container_width=True)
+    st.markdown(fidelity_dots_html(), unsafe_allow_html=True)
     st.caption("Rentang korelasi mentah: −0,087 sampai +0,228. Rentang centered: −0,061 sampai +0,308. Sumber: Tabel 4.23.")
     st.markdown(
         """
@@ -424,7 +699,6 @@ def page_evaluation(frame: pd.DataFrame) -> None:
 def main() -> None:
     st.set_page_config(
         page_title="ReelExplain",
-        page_icon=":movie_camera:",
         layout="wide",
         initial_sidebar_state="expanded",
     )
